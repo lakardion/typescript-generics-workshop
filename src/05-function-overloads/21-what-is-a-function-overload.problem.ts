@@ -1,11 +1,14 @@
 import { Equal, Expect } from "../helpers/type-utils";
 
+function returnWhatIPassIn(t: 1): typeof t;
+function returnWhatIPassIn(t: "matt"): typeof t;
+
 /**
  * This time, let's solve this with function overloads!
  */
-const returnWhatIPassIn = (t: unknown) => {
+function returnWhatIPassIn(t: unknown) {
   return t;
-};
+}
 
 const one = returnWhatIPassIn(1);
 const matt = returnWhatIPassIn("matt");
