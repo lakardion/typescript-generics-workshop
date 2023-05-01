@@ -27,6 +27,6 @@ it("Should error when the input to a function is not typed correctly", () => {
     // a function that returns a string!
     // @ts-expect-error
     String,
-    addOne,
+    addOne
   );
 });

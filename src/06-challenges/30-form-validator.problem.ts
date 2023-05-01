@@ -1,23 +1,33 @@
 import { expect, it } from "vitest";
 import { Equal, Expect } from "../helpers/type-utils";
 
-const makeFormValidatorFactory = (validators: unknown) => (config: unknown) => {
-  return (values: unknown) => {
-    const errors = {} as any;
+const makeFormValidatorFactory =
+  // Matt here actually goes for the keys of the validators rather than the full record. My bad here.
 
-    for (const key in config) {
-      for (const validator of config[key]) {
-        const error = validators[validator](values[key]);
-        if (error) {
-          errors[key] = error;
-          break;
+    <TValidators extends Record<string, (value: string) => string | undefined>>(
+      validators: TValidators
+    ) =>
+    <TConfig extends Record<string, Array<keyof TValidators>>>(
+      config: TConfig
+    ) => {
+      return (values: Record<keyof TConfig, string>) => {
+        const errors = {} as {
+          [K in keyof TConfig]: string | undefined;
+        };
+
+        for (const key in config) {
+          for (const validator of config[key]) {
+            const error = validators[validator](values[key]);
+            if (error) {
+              errors[key] = error;
+              break;
+            }
+          }
         }
-      }
-    }
 
-    return errors;
-  };
-};
+        return errors;
+      };
+    };
 
 const createFormValidator = makeFormValidatorFactory({
   required: (value) => {

@@ -1,11 +1,19 @@
 import { expect, it } from "vitest";
 import { Equal, Expect } from "../helpers/type-utils";
 
-const pick = (obj: {}, picked: string[]) => {
-  return picked.reduce((acc, key) => {
-    acc[key] = obj[key];
-    return acc;
-  }, {});
+const pick = <TObject extends object, TKeys extends keyof TObject>(
+  obj: TObject,
+  picked: TKeys[]
+) => {
+  return picked.reduce(
+    (acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    },
+    {} as {
+      [K in TKeys]: TObject[K];
+    }
+  );
 };
 
 it("Should pick the keys from the object", () => {

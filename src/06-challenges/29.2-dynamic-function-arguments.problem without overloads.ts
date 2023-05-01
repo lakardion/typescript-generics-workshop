@@ -8,23 +8,13 @@ interface Events {
   focus: undefined;
 }
 
-type EventsWithPayloads = keyof {
-  [K in keyof Events as Events[K] extends {} ? K : never]: Events[K];
-};
-type EventsWithoutPayloads = keyof {
-  [K in keyof Events as Events[K] extends {} ? never : K]: Events[K];
-};
-
-export function sendEvent<TEvent extends EventsWithoutPayloads>(
-  event: TEvent
-): void;
-export function sendEvent<TEvent extends EventsWithPayloads>(
-  event: TEvent,
-  payload: Events[TEvent]
-): void;
-export function sendEvent(event: keyof Events, ...args: any[]) {
+export const sendEvent = <TEventKey extends keyof Events>(
+  event: TEventKey,
+  // this is cool way of one-shot this challenge actually. I don't think I have ever done this sort of args thing before so it is nice to know that this is another way of solving it.
+  ...args: Events[TEventKey] extends {} ? [payload: Events[TEventKey]] : []
+) => {
   // Send the event somewhere!
-}
+};
 
 it("Should force you to pass a second argument when you choose an event with a payload", () => {
   // @ts-expect-error
@@ -53,8 +43,8 @@ it("Should prevent you from passing a second argument when you choose an event w
   sendEvent("focus");
 
   sendEvent(
-    // @ts-expect-error
     "focus",
+    // @ts-expect-error
     {}
   );
 });
